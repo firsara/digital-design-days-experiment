@@ -9,6 +9,12 @@ define([
   stage,
   getLuminance
 ){
+  var AudioContext = window.AudioContext || window.webkitAudioContext || false;
+
+  if (! AudioContext) {
+    return function(){}
+  }
+
   var context = new AudioContext();
 
   var FADE_IN_TIME = 1;

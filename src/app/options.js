@@ -154,6 +154,10 @@ define([
       stream();
     } else {
       stream.stop();
+
+      if (store.imageSrc !== 'pixel.jpg') {
+        require('canvas/render')('pixel.jpg');
+      }
     }
   }
 
@@ -168,9 +172,11 @@ define([
     gui.add(options, 'reset');
     gui.add(options, 'upload');
 
-    var controller = gui.add(options, 'webcam');
-    controller.onChange(options.toggleWebcam);
-    controller.onFinishChange(options.toggleWebcam);
+    if ((navigator.mediaDevices && navigator.mediaDevices.getUserMedia) || navigator.getUserMedia) {
+      var controller = gui.add(options, 'webcam');
+      controller.onChange(options.toggleWebcam);
+      controller.onFinishChange(options.toggleWebcam);
+    }
 
     var controller = gui.add(options, 'preset', ['default', 'static', 'investigage']);
     controller.onChange(options.setPreset);
