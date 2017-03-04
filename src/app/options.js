@@ -1,15 +1,13 @@
 
 define([
-  '../../node_modules/dat.gui/build/dat.gui.min',
   'store',
   'utils/rasterize'
 ], function(
-  Dat,
   store,
   rasterize
 ){
   var defaultOptions = {
-    raster: 5,
+    raster: 4,
     scale: 1,
     burn: 1,
     falloff: 1,
@@ -67,23 +65,29 @@ define([
     },
 
     updateGui: function(){
-      for (var i in gui.__controllers) {
-        gui.__controllers[i].updateDisplay();
+      if (gui) {
+        for (var i in gui.__controllers) {
+          gui.__controllers[i].updateDisplay();
+        }
       }
     }
   };
 
-  var gui = new Dat.GUI();
-  gui.add(options, 'reset');
-  gui.add(options, 'upload');
-  gui.add(options, 'raster', 2, 10, 0.1);
-  gui.add(options, 'burn', 0.5, 3, 0.01);
-  gui.add(options, 'scale', 0, 2, 0.01);
-  gui.add(options, 'falloff', 0.5, 2, 0.01);
-  gui.add(options, 'multiply');
-  gui.add(options, 'audio');
-  gui.add(options, 'tone', ['sine', 'square', 'triangle', 'sawtooth']);
-  gui.add(options, 'cover');
+  var hasGui = typeof dat !== 'undefined';
+
+  if (hasGui) {
+    var gui = new dat.GUI();
+    gui.add(options, 'reset');
+    gui.add(options, 'upload');
+    gui.add(options, 'raster', 2, 10, 0.1);
+    gui.add(options, 'burn', 0.5, 5, 0.01);
+    gui.add(options, 'scale', 0, 2, 0.01);
+    gui.add(options, 'falloff', 0.5, 2, 0.01);
+    gui.add(options, 'multiply');
+    gui.add(options, 'audio');
+    gui.add(options, 'tone', ['sine', 'square', 'triangle', 'sawtooth']);
+    gui.add(options, 'cover');
+  }
 
   return options;
 });

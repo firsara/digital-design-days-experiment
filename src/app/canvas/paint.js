@@ -1,18 +1,20 @@
 
 define([
-  '../../../node_modules/stats.js/build/stats.min',
   'stage',
   'store',
   'options'
 ], function(
-  Stats,
   stage,
   store,
   options
 ){
-  var isLocal = window.location.href.indexOf('localhost') !== -1;
-  var stats = new Stats();
-  if (isLocal) document.body.appendChild(stats.dom);
+  // TODO: calculate mouse velocity to get burn fraction at point
+  var hasStats = typeof Stats !== 'undefined';
+
+  if (hasStats) {
+    var stats = new Stats();
+    document.body.appendChild(stats.dom);
+  }
 
   var Math_floor = Math.floor;
   var Math_ceil = Math.ceil;
@@ -23,12 +25,19 @@ define([
   var Math_pow = Math.pow;
   var Math_random = Math.random;
 
+  var buffer = new ImageData(store.windowSize.width, store.windowSize.height);
+  buffer._length = buffer.data.length;
+  buffer._width = buffer.width;
+
+  // TODO: set in store
+  var cleanData = new Uint8ClampedArray(buffer._length);
+  var frames = 0;
+
   return function paint() {
-    requestAnimationFrame(paint);
+    if (hasStats) stats.begin();
 
-    if (isLocal) stats.begin();
-
-    stage.context.clearRect(0, 0, store.windowSize.width, store.windowSize.height);
+    stage.canvas.width = store.windowSize.width;
+    buffer.data.set(cleanData);
 
     var raster = null;
 
@@ -40,16 +49,13 @@ define([
       raster = Math_floor(Math_min(store.windowSize.width / store.rastered.length, store.windowSize.height / store.rastered[0].length));
     }
 
+    // TODO: store raster length in store
     var offset = {
       x: Math_round((store.windowSize.width - raster * store.rastered.length) / 2),
       y: Math_round((store.windowSize.height - raster * store.rastered[0].length) / 2),
     };
 
     var x, y, i, _len, xLen, yLen, x2, x2Len, y2, y2Len, bytePosition;
-
-    var buffer = stage.context.createImageData(store.windowSize.width, store.windowSize.height);
-    buffer._length = buffer.data.length;
-    buffer._width = buffer.width;
 
     for (x = 0, xLen = store.rastered.length, yLen = store.rastered[0].length; x < xLen; x++) {
       for (y = 0; y < yLen; y++) {
@@ -132,6 +138,8 @@ define([
 
     stage.context.putImageData(buffer, 0, 0);
 
-    if (isLocal) stats.end();
+    if (hasStats) stats.end();
+
+    requestAnimationFrame(paint);
   }
 });

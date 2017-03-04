@@ -12,10 +12,11 @@
     "fs-extra": "^2.0.0",
     "requirejs": "^2.3.3",
     "serve": "^4.0.1",
-    "stats.js": "^0.17.0"
+    "stats.js": "^0.17.0",
+    "watch": "^1.0.2"
   },
   "scripts": {
-    "start": "serve .",
+    "start": "watch 'npm run build' ./src/ | serve .",
     "build": "rm -rf dist && mkdir dist && r.js -o baseUrl=src/app name=main out=dist/main.js optimize=none && node build.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

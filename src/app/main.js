@@ -53,11 +53,16 @@ define([
   }
 
   function animate() {
-    if (options.raster > 5) {
-      options.raster = options.raster / 1.05;
+    if (options.raster > targetRaster * 1.25) {
+      if (options.raster < targetRaster * 1.5) {
+        options.raster = options.raster / 1.2;
+      } else {
+        options.raster = options.raster / 1.05;
+      }
+
       requestAnimationFrame(animate);
     } else {
-      options.raster = 5;
+      options.raster = targetRaster;
     }
   }
 
@@ -66,6 +71,7 @@ define([
   render('pixel.jpg');
   paint();
 
+  var targetRaster = options.raster;
   options.raster = 500;
   animate();
 
