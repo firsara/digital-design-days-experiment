@@ -1,6 +1,6 @@
 
 define([
-  '../../node_modules/stats.js/build/stats.min',
+  '../../../node_modules/stats.js/build/stats.min',
   'stage',
   'store',
   'options'
@@ -74,7 +74,7 @@ define([
 
         var distance = Math_sqrt(Math_pow(pointDistance.x, 2) + Math_pow(pointDistance.y, 2));
         var percentage = Math_min(1, distance / (store.falloffDistance / options.falloff));
-        var scaling = 0.5 + 0.5 * color.l + (0 - options.scale / 1.5 + options.scale);
+        var scaling = 0.5 + 0.5 * color.l + (0 - (options.scale - 1) / 1.5 + (options.scale - 1));
 
         color.a = (color.l / 25) + (color.l / 25 * 24) * (1 - percentage);
         color.a = Math_round(color.a * 255);

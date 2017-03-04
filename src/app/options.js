@@ -1,6 +1,6 @@
 
 define([
-  '../node_modules/dat.gui/build/dat.gui',
+  '../../node_modules/dat.gui/build/dat.gui.min',
   'store',
   'utils/rasterize'
 ], function(
