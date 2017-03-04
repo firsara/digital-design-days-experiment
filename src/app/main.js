@@ -16,9 +16,6 @@ define([
   paint,
   playTone
 ){
-  // TODO: option: "burn", more randomness
-  // TODO: option: scale
-
   function mouseMove(event) {
     store.mousePosition = {
       x: event.pageX,
@@ -50,6 +47,13 @@ define([
     stage.canvas.height = window.innerHeight;
 
     store.falloffDistance = Math.sqrt(Math.pow(store.windowSize.width, 2) + Math.pow(store.windowSize.height, 2)) / 6;
+
+    store.buffer = new ImageData(store.windowSize.width, store.windowSize.height);
+    store.buffer._length = store.buffer.data.length;
+    store.buffer._width = store.buffer.width;
+
+    store.cleanBuffer = new Uint8ClampedArray(store.buffer._length);
+    store.updateRasterSize();
   }
 
   function animate() {

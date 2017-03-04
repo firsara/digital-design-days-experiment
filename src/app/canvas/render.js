@@ -1,22 +1,27 @@
 
 define([
-  'store',
-  'options',
   'utils/rasterize',
   'utils/getImageColors'
 ], function(
-  store,
-  options,
   rasterize,
   getImageColors
 ){
+  var store = null;
+  var options = null;
+
   return function render(path) {
+    if (! store) store = require('store');
+    if (! options) options = require('options');
+
     var image = new Image();
 
-    image.onload = function(){
+    store.imageSrc = image.src;
+
+    image.addEventListener('load', function(){
       store.colors = getImageColors(image);
       store.rastered = rasterize(store.colors, options.raster);
-    };
+      store.updateRasterSize();
+    });
 
     image.src = path;
   }

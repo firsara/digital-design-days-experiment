@@ -50,7 +50,7 @@ define([
 
     var oscillator = context.createOscillator();
     oscillator.type = options.tone;
-    oscillator.frequency.value = (color.r + color.b + color.g) * (0.5 + 1 * (color.l / 255));
+    oscillator.frequency.value = Math.pow(Math.sqrt(Math.sqrt((color.r * color.b * color.g) * (0.5 + 1 * (color.l / 255)))), 0.25 + options.tonePower);
     oscillator.connect(gain);
     oscillator.start();
 

@@ -8,7 +8,6 @@ define([
   store,
   options
 ){
-  // TODO: calculate mouse velocity to get burn fraction at point
   var hasStats = typeof Stats !== 'undefined';
 
   if (hasStats) {
@@ -16,127 +15,88 @@ define([
     document.body.appendChild(stats.dom);
   }
 
-  var Math_floor = Math.floor;
-  var Math_ceil = Math.ceil;
-  var Math_round = Math.round;
-  var Math_min = Math.min;
-  var Math_max = Math.max;
-  var Math_sqrt = Math.sqrt;
-  var Math_pow = Math.pow;
-  var Math_random = Math.random;
-
-  var buffer = new ImageData(store.windowSize.width, store.windowSize.height);
-  buffer._length = buffer.data.length;
-  buffer._width = buffer.width;
-
-  // TODO: set in store
-  var cleanData = new Uint8ClampedArray(buffer._length);
-  var frames = 0;
+  var x, y, x2, y2, bytePosition, color, rect, pointDistance, distance, percentage, scaling, randomNumber, burn, bufferData;
 
   return function paint() {
     if (hasStats) stats.begin();
+    if (! store.raster) return requestAnimationFrame(paint);
 
     stage.canvas.width = store.windowSize.width;
-    buffer.data.set(cleanData);
 
-    var raster = null;
+    burn = Math.sqrt(options.burn);
+    bufferData = store.buffer.data;
+    bufferData.set(store.cleanBuffer);
 
-    // TODO: cache rastered image length in store
+    for (x = 0; x < store.raster.x; x++) {
+      for (y = 0; y < store.raster.y; y++) {
+        color = store.rastered[x][y];
 
-    if (options.cover) {
-      raster = Math_ceil(Math_max(store.windowSize.width / store.rastered.length, store.windowSize.height / store.rastered[0].length));
-    } else {
-      raster = Math_floor(Math_min(store.windowSize.width / store.rastered.length, store.windowSize.height / store.rastered[0].length));
-    }
-
-    // TODO: store raster length in store
-    var offset = {
-      x: Math_round((store.windowSize.width - raster * store.rastered.length) / 2),
-      y: Math_round((store.windowSize.height - raster * store.rastered[0].length) / 2),
-    };
-
-    var x, y, i, _len, xLen, yLen, x2, x2Len, y2, y2Len, bytePosition;
-
-    for (x = 0, xLen = store.rastered.length, yLen = store.rastered[0].length; x < xLen; x++) {
-      for (y = 0; y < yLen; y++) {
-        var color = store.rastered[x][y];
-
-        var rect = {
-          x: x * raster,
-          y: y * raster,
-          width: raster,
-          height: raster,
+        rect = {
+          x: store.raster.offset.x + x * store.raster.size,
+          y: store.raster.offset.y + y * store.raster.size,
+          width: store.raster.size,
+          height: store.raster.size
         };
 
-        var center = {
-          x: offset.x + rect.x + rect.width / 2,
-          y: offset.y + rect.y + rect.height / 2
+        pointDistance = {
+          x: (rect.x + rect.width / 2) - store.mousePosition.x,
+          y: (rect.y + rect.height / 2) - store.mousePosition.y,
         };
 
-        var pointDistance = {
-          x: center.x - store.mousePosition.x,
-          y: center.y - store.mousePosition.y,
-        };
+        distance = Math.sqrt(Math.pow(pointDistance.x, 2) + Math.pow(pointDistance.y, 2));
+        percentage = Math.min(1, distance / (store.falloffDistance / options.falloff));
+        scaling = 1 + (options.scale / 2) * (1 - percentage) - 0.5 * (options.scale / 2) * percentage;
 
-        var distance = Math_sqrt(Math_pow(pointDistance.x, 2) + Math_pow(pointDistance.y, 2));
-        var percentage = Math_min(1, distance / (store.falloffDistance / options.falloff));
-        var scaling = 0.5 + 0.5 * color.l + (0 - (options.scale - 1) / 1.5 + (options.scale - 1));
+        color.a = Math.round(color.l * 255 * (1 - percentage * (1 - options.light)));
 
-        color.a = (color.l / 25) + (color.l / 25 * 24) * (1 - percentage);
-        color.a = Math_round(color.a * 255);
-
-        if (color.a === 0) {
+        if (color.a <= 0) {
           continue;
         }
 
-        var randomNumber = Math_random();
-        var burn = Math_sqrt(options.burn);
+        randomNumber = Math.random();
+        percentage = Math.min(1, distance / (store.falloffDistance / burn));
 
-        rect.x = rect.x - Math_round((raster * scaling) / 2);
-        rect.y = rect.y - Math_round((raster * scaling) / 2);
-        rect.width = Math_max(1, Math_round(rect.width * scaling));
-        rect.height = Math_max(1, Math_round(rect.height * scaling));
-        rect.x = Math_round(rect.x + (pointDistance.x * percentage / 1.7 * (burn / 1.75) + percentage * randomNumber * (pointDistance.x / 1.7) * (burn / 1.75)));
-        rect.y = Math_round(rect.y + (pointDistance.y * percentage / 2.2 * (burn / 2) + percentage * randomNumber * (pointDistance.y / 2.2) * (burn / 2)));
+        rect.x = rect.x - Math.round((store.raster.size * scaling) / 2);
+        rect.y = rect.y - Math.round((store.raster.size * scaling) / 2);
+        rect.width = Math.round(rect.width * scaling);
+        rect.height = Math.round(rect.height * scaling);
+        rect.x = Math.round(rect.x + (pointDistance.x * percentage / 1.7 * (burn / 1.75) + percentage * randomNumber * (pointDistance.x / 1.7) * burn));
+        rect.y = Math.round(rect.y + (pointDistance.y * percentage / 2.2 * (burn / 2) + percentage * randomNumber * (pointDistance.y / 2.2) * burn));
 
-        if (color.a === 0) continue;
+        rect.xEnd = rect.x + rect.width;
+        rect.yEnd = rect.y + rect.height;
 
-        var startX = offset.x + rect.x;
-        var endX = offset.x + rect.x + rect.width;
-        var startY = offset.y + rect.y;
-        var endY = offset.y + rect.y + rect.height;
-
-        if (startX < 0 || startY < 0 || endX >= store.windowSize.width || endY >= store.windowSize.height) {
+        if (rect.width <= 0 || rect.height <= 0 || rect.x < 0 || rect.y < 0 || rect.xEnd >= store.windowSize.width || rect.yEnd >= store.windowSize.height) {
           continue;
         }
 
         if (options.multiply) {
-          for (x2 = startX; x2 < endX; x2++) {
-            for (y2 = startY; y2 < endY; y2++) {
-              bytePosition = ((y2 * (buffer._width * 4)) + (x2 * 4));
+          for (x2 = rect.x; x2 < rect.xEnd; x2++) {
+            for (y2 = rect.y; y2 < rect.yEnd; y2++) {
+              bytePosition = ((y2 * (store.buffer._width * 4)) + (x2 * 4));
 
-              buffer.data[bytePosition + 0] = (buffer.data[bytePosition + 0] || 0) + color.r;
-              buffer.data[bytePosition + 1] = (buffer.data[bytePosition + 1] || 0) + color.g;
-              buffer.data[bytePosition + 2] = (buffer.data[bytePosition + 2] || 0) + color.b;
-              buffer.data[bytePosition + 3] = (buffer.data[bytePosition + 3] || 0) + color.a;
+              bufferData[bytePosition + 0] = (bufferData[bytePosition + 0] || 0) + color.r;
+              bufferData[bytePosition + 1] = (bufferData[bytePosition + 1] || 0) + color.g;
+              bufferData[bytePosition + 2] = (bufferData[bytePosition + 2] || 0) + color.b;
+              bufferData[bytePosition + 3] = (bufferData[bytePosition + 3] || 0) + color.a;
             }
           }
         } else {
-          for (x2 = startX; x2 < endX; x2++) {
-            for (y2 = startY; y2 < endY; y2++) {
-              bytePosition = ((y2 * (buffer._width * 4)) + (x2 * 4));
+          for (x2 = rect.x; x2 < rect.xEnd; x2++) {
+            for (y2 = rect.y; y2 < rect.yEnd; y2++) {
+              bytePosition = ((y2 * (store.buffer._width * 4)) + (x2 * 4));
 
-              buffer.data[bytePosition + 0] = color.r;
-              buffer.data[bytePosition + 1] = color.g;
-              buffer.data[bytePosition + 2] = color.b;
-              buffer.data[bytePosition + 3] = color.a;
+              bufferData[bytePosition + 0] = color.r;
+              bufferData[bytePosition + 1] = color.g;
+              bufferData[bytePosition + 2] = color.b;
+              bufferData[bytePosition + 3] = color.a;
             }
           }
         }
       }
     }
 
-    stage.context.putImageData(buffer, 0, 0);
+    stage.context.putImageData(store.buffer, 0, 0);
 
     if (hasStats) stats.end();
 

@@ -12,7 +12,7 @@ define([
     height: 628
   };
 
-  return function getImageColors(image) {
+  function getImageColors(image) {
     var size = {
       width: image.width,
       height: image.height
@@ -30,17 +30,22 @@ define([
     context.drawImage(image, 0, 0, size.width, size.height);
 
     var buffer = context.getImageData(0, 0, size.width, size.height);
+    return getImageColors.fromData(buffer);
+  }
+
+  getImageColors.fromData = function(buffer){
     var bufferData = buffer.data;
     var imageDataWidth = buffer.width;
+    var imageDataHeight = buffer.height;
 
     var bytePosition = null;
     var color = null;
     var colors = [];
 
-    for (var x = 0; x < size.width; x++) {
+    for (var x = 0; x < imageDataWidth; x++) {
       colors[x] = [];
 
-      for (var y = 0; y < size.height; y++) {
+      for (var y = 0; y < imageDataHeight; y++) {
         bytePosition = ((y * (imageDataWidth * 4)) + (x * 4));
 
         color = {};
@@ -55,5 +60,7 @@ define([
     }
 
     return colors;
-  }
+  };
+
+  return getImageColors;
 });
