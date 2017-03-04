@@ -15,7 +15,9 @@ define([
     document.body.appendChild(stats.dom);
   }
 
-  var x, y, x2, y2, bytePosition, color, rect, pointDistance, distance, percentage, scaling, randomNumber, burn, bufferData;
+  var focalLength = 100;
+
+  var x, y, x2, y2, bytePosition, color, rect, pointDistance, distance, percentage, scaling, randomNumber, burn, burnFraction, bufferData;
 
   return function paint() {
     if (hasStats) stats.begin();
@@ -30,6 +32,7 @@ define([
     for (x = 0; x < store.raster.x; x++) {
       for (y = 0; y < store.raster.y; y++) {
         color = store.rastered[x][y];
+        randomNumber = Math.random();
 
         rect = {
           x: store.raster.offset.x + x * store.raster.size,
@@ -45,7 +48,6 @@ define([
 
         distance = Math.sqrt(Math.pow(pointDistance.x, 2) + Math.pow(pointDistance.y, 2));
         percentage = Math.min(1, distance / (store.falloffDistance / options.falloff));
-        scaling = 1 + (options.scale / 2) * (1 - percentage) - 0.5 * (options.scale / 2) * percentage;
 
         color.a = Math.round(color.l * 255 * (1 - percentage * (1 - options.light)));
 
@@ -53,15 +55,24 @@ define([
           continue;
         }
 
-        randomNumber = Math.random();
+        scaling = 1 + (options.scale / 2) * (1 - percentage) - 0.5 * (options.scale / 2) * percentage;
+
+        rect.z = 1 * focalLength - color.l * focalLength;
+        if (focalLength + rect.z !== 0) {
+          scaling = scaling / 1.75 + (focalLength / (focalLength + rect.z)) / 1.75;
+        }
+
         percentage = Math.min(1, distance / (store.falloffDistance / burn));
 
         rect.x = rect.x - Math.round((store.raster.size * scaling) / 2);
         rect.y = rect.y - Math.round((store.raster.size * scaling) / 2);
         rect.width = Math.round(rect.width * scaling);
         rect.height = Math.round(rect.height * scaling);
-        rect.x = Math.round(rect.x + (pointDistance.x * percentage / 1.7 * (burn / 1.75) + percentage * randomNumber * (pointDistance.x / 1.7) * burn));
-        rect.y = Math.round(rect.y + (pointDistance.y * percentage / 2.2 * (burn / 2) + percentage * randomNumber * (pointDistance.y / 2.2) * burn));
+
+        rect.x = Math.round(rect.x + (pointDistance.x * percentage / 2.25 * (burn / 2.25) + percentage * randomNumber * (pointDistance.x / 2.25) * burn));
+
+        burnFraction = pointDistance.y < 0 ? 1.5 : 0.75;
+        rect.y = Math.round(rect.y + (pointDistance.y * percentage / 1.75 * (burn / 1.75) + percentage * randomNumber * (pointDistance.y / 1.75) * burn) * burnFraction);
 
         rect.xEnd = rect.x + rect.width;
         rect.yEnd = rect.y + rect.height;
