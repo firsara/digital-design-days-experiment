@@ -13,7 +13,7 @@ define(function(){
     },
 
     mousePosition: {
-      x: window.innerWidth / 2,
+      x: 0,
       y: window.innerHeight / 2
     },
 

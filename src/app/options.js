@@ -13,6 +13,7 @@ define([
   var defaultOptions = {
     preset: 'default',
     webcam: false,
+    animate: false,
     raster: 4,
     scale: 1,
     burn: 1,
@@ -43,6 +44,7 @@ define([
       options.updateGui();
     },
 
+    animate: defaultOptions.animate,
     preset: defaultOptions.preset,
     webcam: defaultOptions.webcam,
     scale: defaultOptions.scale,
@@ -60,6 +62,7 @@ define([
     },
 
     reset: function(){
+      options.animate = defaultOptions.animate;
       options.preset = defaultOptions.preset;
       options.webcam = defaultOptions.webcam;
       options.raster = defaultOptions.raster;
@@ -182,7 +185,8 @@ define([
     controller.onChange(options.setPreset);
     controller.onFinishChange(options.setPreset);
 
-    gui.add(options, 'raster', 2, 10, 0.1);
+    gui.add(options, 'animate');
+    gui.add(options, 'raster', screen.width < 1025 ? 5 : 2, 10, 0.1);
     gui.add(options, 'burn', 0, 5, 0.01);
     gui.add(options, 'scale', 0, 3, 0.01);
     gui.add(options, 'falloff', 0.5, 2, 0.01);
@@ -192,6 +196,10 @@ define([
     gui.add(options, 'tone', ['sine', 'square', 'triangle', 'sawtooth']);
     gui.add(options, 'tonePower', 1, 2, 0.01);
     gui.add(options, 'cover');
+
+    if (screen.width < 1025) {
+      gui.close();
+    }
   }
 
   return options;

@@ -16,7 +16,32 @@ define([
   paint,
   playTone
 ){
+  var fakeMouseDirection = 1;
+  var fakeMouseIteration = 1;
+
+  function fakeMouse() {
+    if (fakeMouseDirection === -1 || fakeMouseDirection === 1) {
+      var fakeMouseStep = store.windowSize.width / 2000 * 11;
+
+      store.mousePosition.x = store.mousePosition.x + (fakeMouseStep + (fakeMouseStep / 2) * Math.random()) * fakeMouseDirection;
+      store.mousePosition.y = store.windowSize.height / 2 + fakeMouseStep * 2 * Math.random() * fakeMouseIteration;
+      fakeMouseIteration = fakeMouseIteration * -1;
+
+      if (store.mousePosition.x >= store.windowSize.width - store.raster.offset.x / 2) {
+        fakeMouseDirection = -1;
+      }
+
+      if (store.mousePosition.x < store.raster.offset.x / 2) {
+        fakeMouseDirection = 1;
+      }
+
+      requestAnimationFrame(fakeMouse);
+    }
+  }
+
   function mouseMove(event) {
+    fakeMouseDirection = null;
+
     store.mousePosition = {
       x: event.pageX,
       y: event.pageY
@@ -32,6 +57,7 @@ define([
     event.stopPropagation();
 
     if (! (event.touches && event.touches[0])) return;
+    fakeMouseDirection = null;
     mouseMove(event.touches[0]);
   }
 
@@ -57,17 +83,27 @@ define([
   }
 
   function animate() {
-    if (options.raster > targetRaster * 1.25) {
-      if (options.raster < targetRaster * 1.5) {
-        options.raster = options.raster / 1.2;
-      } else {
-        options.raster = options.raster / 1.05;
-      }
+    if (options.animate) {
+      if (options.raster > targetRaster) {
+        if (options.raster > targetRaster) {
+          options.raster = options.raster / 1.05;
+        }
 
-      requestAnimationFrame(animate);
-    } else {
-      options.raster = targetRaster;
+        if (options.raster <= targetRaster) {
+          targetRaster = 3.5 + Math.random() * 20;
+        }
+      } else {
+        if (options.raster < targetRaster) {
+          options.raster = options.raster * 1.05;
+        }
+
+        if (options.raster >= targetRaster) {
+          targetRaster = 3.5 + Math.random() * 20;
+        }
+      }
     }
+
+    requestAnimationFrame(animate);
   }
 
   resize();
@@ -76,8 +112,9 @@ define([
   paint();
 
   var targetRaster = options.raster;
-  options.raster = 500;
   animate();
+
+  fakeMouse();
 
   document.addEventListener('gesturestart', function(e){
     e.preventDefault();
