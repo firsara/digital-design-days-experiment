@@ -18,5 +18,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Fabian Irsara <info@fabianirsara.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/firsara/digital-design-days-experiment.git"
+  },
+  "homepage": "https://bitbucket.org/firsara/digital-design-days-experiment#readme"
 }
