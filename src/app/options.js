@@ -164,6 +164,14 @@ define([
     }
   }
 
+  function rerender() {
+    delay(doRerender, 85)();
+  }
+
+  function doRerender() {
+    options.raster = options.raster;
+  }
+
   var fileInput = document.createElement('input');
   fileInput.type = 'file';
   fileInput.addEventListener('change', selectedFile);
@@ -195,7 +203,10 @@ define([
     gui.add(options, 'audio');
     gui.add(options, 'tone', ['sine', 'square', 'triangle', 'sawtooth']);
     gui.add(options, 'tonePower', 1, 2, 0.01);
-    gui.add(options, 'cover');
+
+    var controller = gui.add(options, 'cover');
+    controller.onChange(rerender);
+    controller.onFinishChange(rerender);
 
     if (screen.width < 1025) {
       gui.close();
