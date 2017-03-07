@@ -18,6 +18,10 @@ define([
 ){
   var fakeMouseDirection = 1;
   var fakeMouseIteration = 1;
+  var idleTimeout = null;
+  var hasInstructions = window.location.hash.toString().indexOf('instructions=false') === -1;
+  var instructions = document.getElementById('instructions');
+  var start = document.getElementById('start');
 
   function fakeMouse() {
     if (fakeMouseDirection === -1 || fakeMouseDirection === 1) {
@@ -39,6 +43,30 @@ define([
     }
   }
 
+  function idleReset() {
+    if (hasInstructions) {
+      var oneSecond = 1000;
+      var oneMinute = 60 * oneSecond;
+
+      if (idleTimeout) clearTimeout(idleTimeout);
+      idleTimeout = setTimeout(idle, 5 * oneMinute);
+    }
+  }
+
+  function idle() {
+    if (hasInstructions) {
+      instructions.classList.add('show');
+      start.removeEventListener('click', dismissIdle);
+      start.addEventListener('click', dismissIdle);
+      options.reset();
+    }
+  }
+
+  function dismissIdle() {
+    instructions.classList.remove('show');
+    idleReset();
+  }
+
   function mouseMove(event) {
     fakeMouseDirection = null;
 
@@ -49,6 +77,10 @@ define([
 
     if (options.audio) {
       delay(playTone, 340)();
+
+      if (hasInstructions) {
+        delay(idleReset, 1000)();
+      }
     }
   }
 
@@ -115,6 +147,19 @@ define([
   animate();
 
   fakeMouse();
+
+  if (hasInstructions) {
+    idleReset();
+    idle();
+  } else {
+    instructions.parentNode.removeChild(instructions);
+  }
+
+  if (window.location.hash.toString().indexOf('nav=false') !== -1) {
+    document.body.classList.add('no-nav');
+  } else {
+    document.body.classList.add('has-nav');
+  }
 
   document.addEventListener('gesturestart', function(e){
     e.preventDefault();

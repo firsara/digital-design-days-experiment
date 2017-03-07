@@ -178,8 +178,13 @@ define([
 
   var hasGui = typeof dat !== 'undefined';
 
-  if (hasGui) {
+  if (hasGui && (window.location.hash.toString().indexOf('controls=false') === -1)) {
     var gui = new dat.GUI();
+
+    if (screen.width < 1025 || window.location.hash.toString().indexOf('controls=open') === -1) {
+      gui.close();
+    }
+
     gui.add(options, 'reset');
     gui.add(options, 'upload');
 
@@ -207,10 +212,6 @@ define([
     var controller = gui.add(options, 'cover');
     controller.onChange(rerender);
     controller.onFinishChange(rerender);
-
-    if (screen.width < 1025) {
-      gui.close();
-    }
   }
 
   return options;

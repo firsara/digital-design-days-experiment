@@ -1,6 +1,6 @@
-# [Digital Design Days Milano Experiment](https://ddd.fabianirsara.com)
+# [Digital Design Days 2017 / OFFF Milano Experiment](https://ddd.fabianirsara.com)
 
-Experiment for [Digital Design Days[(http://ddd.it) 2017 in Milano.
+Javascript Experiment for [Digital Design Days 2017 / OFFF Milano](http://ddd.it).
 
 ## Running
 

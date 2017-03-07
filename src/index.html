@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-    <title>Digital Design Days Milan Experiment | Fabian Irsara</title>
+    <title>Digital Design Days 2017 / OFFF Milano Experiment | Fabian Irsara</title>
 
     <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="images/favicon-96x96.png">
@@ -31,12 +31,173 @@
       width: 100%;
       height: 100%;
     }
+    body {
+      font-family: Helvetica, Arial, sans-serif;
+      color: #213037;
+      font-size: 16px;
+      line-height: 1;
+      -webkit-font-smoothing: antialiased;
+      -moz-font-smoothing: antialiased;
+      -ms-font-smoothing: antialiased;
+      font-smoothing: antialiased;
+      -webkit-text-rendering: optimizeLegibility;
+      -moz-text-rendering: optimizeLegibility;
+      -ms-text-rendering: optimizeLegibility;
+      text-rendering: optimizeLegibility;
+    }
+    #instructions {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      opacity: 0;
+      pointer-events: none;
+      -webkit-transition: opacity 340ms ease;
+      -moz-transition: opacity 340ms ease;
+      transition: opacity 340ms ease;
+      z-index: 1;
+    }
+    #instructions.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .box {
+      width: auto;
+      max-width: 550px;
+      margin: 10px;
+      padding: 50px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      -webkit-box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+      -moz-box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+      -webkit-transform: translate(-50%, -50%);
+      -moz-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.9);
+    }
+    h1 {
+      margin: 0;
+      font-size: 32px;
+      padding-bottom: 0.25em;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+    p {
+      margin: 1em 0;
+      line-height: 1.5;
+    }
+    #instructions a {
+      display: inline-block;
+      background: none;
+      text-decoration: none;
+      color: #fff;
+      background: #213037;
+      -webkit-transition: background 170ms ease, color 170ms ease;
+      -moz-transition: background 170ms ease, color 170ms ease;
+      transition: background 170ms ease, color 170ms ease;
+      padding: 0.25em 0.5em 0.175em;
+    }
+    #instructions a:hover {
+      background: #000;
+    }
+    #start {
+      margin: 0;
+      background: #213037;
+      display: block;
+      cursor: pointer;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      outline: none;
+      -webkit-transition: background 170ms ease;
+      -moz-transition: background 170ms ease;
+      transition: background 170ms ease;
+      font-size: 1em;
+      line-height: 1em;
+      padding: 0.85em 1em;
+      margin-top: 1.5em;
+      text-transform: uppercase;
+    }
+    #start:hover {
+      background: #000;
+    }
+    .nav {
+      position: fixed;
+      bottom: 20px;
+      z-index: 2;
+    }
+    .nav-right {
+      position: fixed;
+      right: 20px;
+      z-index: 2;
+    }
+    .nav-left {
+      left: 20px;
+    }
+    .nav a {
+      float: left;
+      display: inline-block;
+      color: #fff;
+      text-decoration: none;
+      padding: 5px;
+      font-size: 12px;
+    }
+    .fb-like-wrap {
+      float: left;
+      margin-left: 10px;
+      position: relative;
+      top: 1px;
+    }
+    .dg.ac {
+      z-index: 10 !important;
+    }
+    .nav {
+      display: none;
+    }
+    .has-nav .nav {
+      display: block;
+    }
     </style>
   </head>
   <body>
     <canvas id="canvas"></canvas>
+
+    <div id="instructions">
+      <div class="box">
+        <h1>Hello little fellow.</h1>
+        <p>move your mouse around and explore this pixelated experiment for <a href="http://ddd.it" target="_blank">Digital Design Days 2017 / OFFF Milano</a></p>
+        <p>If you want to customize your experience open the control panel in the top right corner and play around with the settings you find there.</p>
+        <button id="start">Got it!</button>
+      </div>
+    </div>
+
     <script src="../node_modules/stats.js/build/stats.min.js"></script>
     <script src="../node_modules/dat.gui/build/dat.gui.min.js"></script>
     <script data-main="app/main.js" src="../node_modules/requirejs/require.js"></script>
+
+    <div class="nav nav-left">
+      <a href="https://fabianirsara.com" target="_blank">Created by Fabian Irsara</a>
+
+      <div class="fb-like-wrap">
+        <div class="fb-like" data-href="https://ddd.fabianirsara.com/" data-layout="standard" data-action="like" data-size="small" data-show-faces="false" data-share="false" data-colorscheme="dark"></div>
+      </div>
+    </div>
+
+    <div class="nav nav-right">
+      <a href="https://github.com/firsara/digital-design-days-experiment" target="_blank">Github</a>
+    </div>
+
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8&appId=130800750272087";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
   </body>
 </html>
