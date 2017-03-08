@@ -23,6 +23,10 @@ define([
   var instructions = document.getElementById('instructions');
   var start = document.getElementById('start');
 
+  if (typeof window.DEFAULT_IMAGE === 'undefined') {
+    window.DEFAULT_IMAGE = 'pixel.jpg';
+  }
+
   function fakeMouse() {
     if (fakeMouseDirection === -1 || fakeMouseDirection === 1) {
       var fakeMouseStep = store.windowSize.width / 2000 * 11;
@@ -140,7 +144,8 @@ define([
 
   resize();
 
-  render('pixel.jpg');
+  render(window.DEFAULT_IMAGE);
+
   paint();
 
   var targetRaster = options.raster;

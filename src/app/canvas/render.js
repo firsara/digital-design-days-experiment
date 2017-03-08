@@ -15,7 +15,7 @@ define([
 
     var image = new Image();
 
-    store.imageSrc = image.src;
+    store.imageSrc = path;
 
     image.addEventListener('load', function(){
       store.colors = getImageColors(image);

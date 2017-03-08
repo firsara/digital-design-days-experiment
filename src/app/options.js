@@ -78,8 +78,10 @@ define([
 
       options.updateGui();
 
-      if (store.imageSrc !== 'pixel.jpg') {
-        require('canvas/render')('pixel.jpg');
+      stream.stop();
+
+      if (store.imageSrc !== window.DEFAULT_IMAGE) {
+        require('canvas/render')(window.DEFAULT_IMAGE);
       }
     },
 
@@ -158,8 +160,8 @@ define([
     } else {
       stream.stop();
 
-      if (store.imageSrc !== 'pixel.jpg') {
-        require('canvas/render')('pixel.jpg');
+      if (store.imageSrc !== window.DEFAULT_IMAGE) {
+        require('canvas/render')(window.DEFAULT_IMAGE);
       }
     }
   }
