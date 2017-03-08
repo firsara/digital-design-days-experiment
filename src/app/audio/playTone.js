@@ -51,12 +51,12 @@ define([
     var gain = context.createGain();
     gain.connect(context.destination);
     gain.gain.value = 0.00001;
-    gain.gain.exponentialRampToValueAtTime(VOLUMES[options.tone], context.currentTime + FADE_IN_TIME);
+    gain.gain.exponentialRampToValueAtTime(VOLUMES[options.tone] / (options.tonePower * options.tonePower), context.currentTime + FADE_IN_TIME);
     gain.gain.exponentialRampToValueAtTime(0.00001, context.currentTime + FADE_IN_TIME + FADE_OUT_TIME);
 
     var oscillator = context.createOscillator();
     oscillator.type = options.tone;
-    oscillator.frequency.value = Math.pow(Math.sqrt(Math.sqrt((color.r * color.b * color.g) * (0.5 + 1 * (color.l / 255)))), 0.25 + options.tonePower);
+    oscillator.frequency.value = Math.pow(Math.sqrt(Math.sqrt((color.r * color.b * color.g) * (0.6 - 0.5 * Math.random() + 0.9 * (color.l / 255)))), 0.25 + options.tonePower);
     oscillator.connect(gain);
     oscillator.start();
 
