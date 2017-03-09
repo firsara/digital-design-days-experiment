@@ -179,6 +179,7 @@ define([
   fileInput.addEventListener('change', selectedFile);
 
   var hasGui = typeof dat !== 'undefined';
+  var gui = null;
 
   if (hasGui && (window.location.hash.toString().indexOf('controls=false') === -1)) {
     var gui = new dat.GUI();
@@ -214,6 +215,28 @@ define([
     var controller = gui.add(options, 'cover');
     controller.onChange(rerender);
     controller.onFinishChange(rerender);
+  }
+
+  if (window.location.hash.toString().indexOf('embedded=true') !== -1) {
+    options.cover = true;
+    options.multiply = false;
+    rerender();
+    options.updateGui();
+  }
+
+  if (window.location.hash.toString().indexOf('options=') !== -1) {
+    try {
+      var paramOptions = window.location.hash.toString().substring(window.location.hash.toString().indexOf('options=')).replace('options=', '');
+      paramOptions = JSON.parse(paramOptions.replace(/\'/g), '"');
+
+      for (var k in paramOptions) {
+        if (paramOptions.hasOwnProperty(k) && options[k]) {
+          options[k] = paramOptions[k];
+          rerender();
+          options.updateGui();
+        }
+      }
+    } catch(err) {}
   }
 
   return options;
