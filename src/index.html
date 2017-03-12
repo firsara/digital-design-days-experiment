@@ -58,19 +58,19 @@
       -moz-transition: opacity 340ms ease;
       transition: opacity 340ms ease;
       z-index: 1;
+      padding: 10px;
     }
     #instructions.show {
       opacity: 1;
       pointer-events: auto;
     }
     .box {
-      width: auto;
       max-width: 550px;
-      margin: 10px;
       padding: 50px;
-      position: absolute;
+      position: relative;
       left: 50%;
       top: 50%;
+      width: 100%;
       -webkit-box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
       -moz-box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
       box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
@@ -160,6 +160,22 @@
     }
     .has-nav .nav {
       display: block;
+    }
+    @media screen and (max-width: 1025px) {
+      .box {
+        padding: 25px;
+      }
+    }
+    @media screen and (max-width: 699px) {
+      body {
+        font-size: 15px;
+      }
+      h1 {
+        font-size: 26px;
+      }
+      .box {
+        padding: 10px;
+      }
     }
     </style>
   </head>
